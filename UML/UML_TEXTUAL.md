@@ -1,29 +1,3 @@
-# SGCA — Sistema de Gerenciamento de Cursos e Alunos
-
-Sistema desenvolvido para avaliação acadêmica durante o curso de Engenharia de Software.
-
-## Objetivo
-
-O SGCA centralizará e organizará dados relacionados à administração de cursos e alunos, proporcionando maior controle sobre cadastros, matrículas e acompanhamento acadêmico.
-
-## Funcionalidades
-
-- Cadastro, edição e exclusão de alunos
-- Cadastro e gerenciamento de cursos
-- Controle de matrículas
-- Consulta de alunos e cursos
-- Gerenciamento de informações acadêmicas
-- Controle de acesso por permissões de classe
-- Relatórios de performance dos estudantes
-
-## Tecnologias utilizadas
-
-- **Backend:** `<python>`
-- **Banco de dados:** `<Sqllite3>`
-- **Testes:** `<pytest>`
-
-## UML Textual
-
 ## Classes Base
 1. Oferta (classe base para ofertas)
    - Subclasse: Turma
@@ -86,10 +60,6 @@ O SGCA centralizará e organizará dados relacionados à administração de curs
 ## Relacionamentos
 - Turma contém objetos Aluno em lista_alunos
 - Aluno possui objetos Matricula em matrículas_ativas e matrículas_concluidas
-- Curso contém lista de objetos Alunos
+- Curso contém objeto Turma
 - Professor está associado a objetos Turma via lista_turmas
-- Matricula liga Aluno e Turma 
-
-
-## Relação entre as classes
-![Alt text](/UML/mermaid-diagram.svg "Diagrama UML do projeto SGCA")
+- Matricula liga Aluno e Turma para rastrear matrículas

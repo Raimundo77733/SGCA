@@ -1,0 +1,54 @@
+classDiagram
+    class Oferta {
+        <<abstract>>
+    }
+    class Pessoa {
+        <<abstract>>
+    }
+    class Turma {
+        +cadastrar_turma()
+        +remover_turma()
+        +editar_dados_turma()
+        +listar_alunos()
+        +calcular_taxa_de_aprovação()
+        +mostrar_distribuição_de_notas()
+    }
+    class Aluno {
+        +calcular_cr()
+        +mostrar_historico()
+        +trancar_curso()
+        +trancar_disciplina()
+    }
+    class Secretaria {
+        +cadastrar_aluno()
+        +editar_dados_aluno()
+        +remover_aluno()
+    }
+    class Professor {
+        +lancar_nota()
+        +lancar_frequencia()
+        +calcular_situacao()
+    }
+    class Curso {
+        +listar_cursos()
+        +criar_curso()
+        +remover_curso()
+        +editar_dados_curso()
+        +relatorio_topn()
+        +relatorio_risco()
+    }
+    class Matricula {
+        +verificar_requisitos()
+        +verificar_vagas()
+        +verificar_choque_horario()
+    }
+
+    Oferta <|-- Turma
+    Pessoa <|-- Aluno
+    Pessoa <|-- Secretaria
+    Pessoa <|-- Professor
+    Turma "1" -- "0..*" Aluno : Turma armazena lista de alunos
+    Turma "1" *--"0.." Matricula: Compõe lista de matriculados na turma
+    Aluno "1" *-- "0..*" Matricula : Matrículas ativas e concluídas compõe o histórico
+    Curso -- Turma
+    Curso "0.." -- "1" Professor : Acessa relatórios usando o objeto curso das turmas
