@@ -1,0 +1,6 @@
+{
+  "nota_minima_aprovacao": 7.0,
+  "frequencia_minima": 75,
+  "max_turmas_por_aluno": 5,
+  "top_n_alunos": 10
+}

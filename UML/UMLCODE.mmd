@@ -2,44 +2,116 @@ classDiagram
     class Oferta {
         <<abstract>>
     }
+
     class Pessoa {
         <<abstract>>
     }
+
+    class Data_link_sql {
+        +database_link
+        +cursor
+        +novo_aluno_database(aluno)
+        +get_lista_cursos_database()
+        +get_aluno_database(n_matricula)
+        +update_aluno_database(aluno)
+        +remove_aluno_database(numero_matricula)
+        +get_numeros_repetidos_matricula()
+        +insert_curso_database(curso)
+        +update_curso_database(curso)
+        +remove_curso_database(cod_curso)
+        +lista_alunos_curso_database(cod_curso)
+        +get_disciplinas_do_curso_database(cod_curso)
+        +get_topn_database(cod_curso)
+        +get_historico_database(n_matricula)
+        +nova_matricula_database(matricula)
+        +update_matricula_database(matricula)
+        +nova_turma_database(turma)
+        +update_turma_database(turma)
+        +remove_turma_database(id_turma)
+        +get_lista_alunos_turma(id_turma)
+        +get_turma_database(id_turma)
+        +get_disciplina_database(nome_disciplina)
+        +get_requisitos_disciplina_database(nome_disciplina)
+    }
+
+    class Aluno {
+        +nome: str
+        +email: str
+        +cod_curso: int
+        -n_matricula: int
+        -status_curso: str
+        +historico: list
+        +matriculas_ativas: list
+        +cr: float
+        +calcular_cr()
+        +mostrar_historico()
+        +trancar_curso()
+        +trancar_disciplina(matricula)
+    }
+
+    class Secretaria {
+        +nome: str
+        +email: str
+        +identificador: str
+        +cadastrar_aluno(aluno)
+        +editar_dados_aluno(aluno)
+        +remover_aluno(numero_matricula)
+        +get_aluno_por_matricula(n_matricula)
+        +listar_cursos()
+        +inserir_curso(curso)
+        +remover_curso(cod_curso)
+        +editar_dados_curso(curso)
+        +matricular(matricula)
+    }
+
+    class Professor {
+        +identificador: str
+        +lista_turmas: list
+        +lancar_nota()
+        +lancar_frequencia()
+        +calcular_situacao()
+        +calcular_taxa_aprov(id_turma)
+        +mostrar_distrib_notas()
+    }
+
+    class Curso {
+        +nome_curso: str
+        +cod_curso: int
+        +disciplinas: list
+        +__str__()
+        +lista_alunos_curso(cod_curso)
+        +get_disciplinas_do_curso()
+        +relatorio_topn()
+    }
+
     class Turma {
+        +cod_curso: int
+        +nome_disciplina: str
+        +carga_horaria: int
+        +data_limite: date
+        +semestre: str
+        +horarios: str
+        +vagas_max: int
+        +inscritos: int
+        +id_turma: int
+        +status: str
+        +local: str
         +cadastrar_turma()
         +remover_turma()
         +editar_dados_turma()
         +listar_alunos()
-        +calcular_taxa_de_aprovação()
-        +mostrar_distribuição_de_notas()
     }
-    class Aluno {
-        +calcular_cr()
-        +mostrar_historico()
-        +trancar_curso()
-        +trancar_disciplina()
-    }
-    class Secretaria {
-        +cadastrar_aluno()
-        +editar_dados_aluno()
-        +remover_aluno()
-    }
-    class Professor {
-        +lancar_nota()
-        +lancar_frequencia()
-        +calcular_situacao()
-    }
-    class Curso {
-        +listar_cursos()
-        +criar_curso()
-        +remover_curso()
-        +editar_dados_curso()
-        +relatorio_topn()
-        +relatorio_risco()
-    }
+
     class Matricula {
-        +verificar_requisitos()
-        +verificar_vagas()
+        +n_matricula: int
+        +id_turma: int
+        +media: float
+        +notas: list
+        +frequencia_media: float
+        +registro_frequencia: list
+        +status: str
+        +verificar_requisitos(turma, aluno)
+        +verificar_vagas(turma)
         +verificar_choque_horario()
     }
 
@@ -47,8 +119,18 @@ classDiagram
     Pessoa <|-- Aluno
     Pessoa <|-- Secretaria
     Pessoa <|-- Professor
-    Turma "1" -- "0..*" Aluno : Turma armazena lista de alunos
-    Turma "1" *--"0.." Matricula: Compõe lista de matriculados na turma
-    Aluno "1" *-- "0..*" Matricula : Matrículas ativas e concluídas compõe o histórico
-    Curso -- Turma
-    Curso "0.." -- "1" Professor : Acessa relatórios usando o objeto curso das turmas
+
+    Curso "1" --> "0..*" Turma : contém ofertas/disciplinas
+    Turma "1" --> "0..*" Aluno : lista alunos matriculados
+    Aluno "1" --> "0..*" Matricula : histórico e matrículas
+    Matricula --> Aluno
+    Matricula --> Turma
+    Secretaria ..> Aluno : cadastra / consulta / remove
+    Secretaria ..> Curso : gerencia cursos
+    Secretaria ..> Matricula : registra matrícula
+    Professor --> Turma : acompanha turmas
+    Data_link_sql --> Aluno
+    Data_link_sql --> Curso
+    Data_link_sql --> Turma
+    Data_link_sql --> Matricula
+    Data_link_sql --> Professor
