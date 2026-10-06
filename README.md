@@ -92,4 +92,4 @@ O SGCA centralizará e organizará dados relacionados à administração de curs
 
 
 ## Relação entre as classes
-![Alt text](/UML/mermaid-diagram.png "Diagrama UML do projeto SGCA")
+![Alt text](/UML/mermaid-diagram.svg "Diagrama UML do projeto SGCA")
