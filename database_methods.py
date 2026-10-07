@@ -1,8 +1,6 @@
 import sqlite3
 from pathlib import Path
 
-from database_init import connection
-
 
 class Data_link_sql:
     def __init__(self):
@@ -18,6 +16,7 @@ class Data_link_sql:
                               VALUES (?, ?, ?, ?, ?)''',
                             (aluno.matricula, aluno.nome, aluno.email, aluno.cod_curso, aluno.cr))
         self.database_link.commit()
+
 
     def get_lista_cursos_database(self):
         self.cursor.execute('''SELECT DISTINCT * FROM Curso ''')
