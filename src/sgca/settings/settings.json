@@ -1,0 +1,8 @@
+{
+  "nota_minima_aprovacao": 7.0,
+  "frequencia_minima": 75,
+  "max_turmas_por_aluno": 5,
+  "top_n_alunos": 10,
+  "data_limite_trancamento_turma": "2026-11-30",
+  "data_limite_trancamento_curso": "2026-12-15"
+}
