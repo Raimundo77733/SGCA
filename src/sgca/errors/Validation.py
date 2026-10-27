@@ -30,3 +30,5 @@ class NotaInvalidaError(ValidationError):
 
 class FrequenciaInvalidaError(ValidationError):
     """O registro de frequência é inválido."""
+class StuatusInvalidoError(ValidationError):
+    """O status atribuido a turma é inválido"""

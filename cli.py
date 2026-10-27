@@ -9,11 +9,11 @@ from src.sgca.errors.Validation import ValidationError
 from src.sgca.facade.bootstrap import criar_sgca
 
 
+# ============================================================================
+# AÇÕES: cada função faz uma coisa e recebe o sistema e os argumentos da CLI
+# ============================================================================
 
-# executar->função(sgca(sistema) e args)-> sistema(SGCAManager classe)
-# ->Serviço->Repo->Banco(Base)->Return->Print
-
-'''Curso'''
+# --- cursos -----------------------------------------------------------------
 def adicionar_curso(sistema, args):
     curso = Curso(args.nome_curso, args.cod_curso)
     sistema.cadastro.inserir_curso(curso)
@@ -31,7 +31,7 @@ def listar_cursos(sistema, args):
         print(f"{curso.cod_curso} - {curso.nome_curso}")
 
 
-'''Aluno'''
+# --- alunos -----------------------------------------------------------------
 def cadastrar_aluno(sistema, args):
     curso = sistema.cadastro.buscar_curso(args.cod_curso)
     aluno = Aluno(args.nome, args.email, curso.cod_curso, curso.nome_curso)
@@ -59,7 +59,7 @@ def buscar_aluno(sistema, args):
     print(aluno)
 
 
-'''Turma'''
+# --- turmas -----------------------------------------------------------------
 def cadastrar_turma(sistema, args):
     disciplina = sistema.cadastro.buscar_disciplina(args.disciplina)
 
@@ -92,8 +92,10 @@ def buscar_turma(sistema, args):
     turma = sistema.cadastro.buscar_turma(args.id_turma)
     print(turma)
 
-
-'''Matricula'''
+def fechar_turma(sistema,args):
+    sistema.cadastro.fechar_turma(args.id_turma, args.status)
+    print(f"Status da turma: {args.id_turma} alterado para {args.status}")
+# --- matrículas -------------------------------------------------------------
 def matricular_aluno(sistema, args):
     sistema.matricula.matricular(args.matricula, args.id_turma)
     print(f"Aluno {args.matricula} matriculado na turma {args.id_turma}")
@@ -138,7 +140,7 @@ def criar_parser():
     acad_parser = comando.add_parser("acad", help="Ações acadêmicas")
     acad_comandos = acad_parser.add_subparsers(dest="acad", required=True)
 
-    '''Curso'''
+    # --- cursos ---
     add_curso = acad_comandos.add_parser("add_curso", help="Cria um novo curso")
     add_curso.add_argument("cod_curso", help="Código do curso (1000-9999)")
     add_curso.add_argument("nome_curso", help="Nome do curso")
@@ -148,7 +150,7 @@ def criar_parser():
 
     acad_comandos.add_parser("list_cursos", help="Lista os cursos")
 
-    '''Aluno'''
+    # --- alunos ---
     add_aluno = acad_comandos.add_parser("add_aluno", help="Cria um novo aluno")
     add_aluno.add_argument("nome", help="Nome do aluno")
     add_aluno.add_argument("email", help="E-mail do aluno")
@@ -165,7 +167,7 @@ def criar_parser():
     busc_aluno = acad_comandos.add_parser("busc_aluno", help="Busca um aluno pela matrícula")
     busc_aluno.add_argument("matricula", type=int, help="Número de matrícula")
 
-    '''Turma'''
+    # --- turmas ---
     add_turma = acad_comandos.add_parser("add_turma", help="Cria uma nova turma")
     add_turma.add_argument("disciplina", help="Nome da disciplina")
     add_turma.add_argument("semestre", help="Semestre (ex.: 2026.2)")
@@ -188,7 +190,11 @@ def criar_parser():
     busc_turma = acad_comandos.add_parser("busc_turma", help="Busca uma turma pelo ID")
     busc_turma.add_argument("id_turma", type=int, help="ID da turma")
 
-    '''Matricula'''
+    fechar_turm=acad_comandos.add_parser("fechar_turma", help="Altera o status da turma pelo ID")
+    fechar_turm.add_argument("id_turma", type=int, help="ID da turma")
+    fechar_turm.add_argument("status", help="ID da turma")
+
+    # --- matrículas ---
     matricular = acad_comandos.add_parser("matricular", help="Matricula um aluno em uma turma")
     matricular.add_argument("matricula", type=int, help="Número de matrícula")
     matricular.add_argument("id_turma", type=int, help="ID da turma")
@@ -247,6 +253,8 @@ def executar(sistema, args):
             remover_turma(sistema, args)
         elif args.acad == "busc_turma":
             buscar_turma(sistema, args)
+        elif args.acad=="fechar_turma":
+            fechar_turma(sistema,args)
 
         elif args.acad == "matricular":
             matricular_aluno(sistema, args)

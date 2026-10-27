@@ -1,6 +1,6 @@
 import random
 
-from src.sgca.errors.Validation import MatriculaInvalidaError, ValidationError
+from src.sgca.errors.Validation import MatriculaInvalidaError, ValidationError, StuatusInvalidoError
 
 MATRICULA_MIN = 100000
 MATRICULA_MAX = 999999
@@ -83,3 +83,9 @@ class CadastroService:
 
     def buscar_turma(self, id_turma):
         return self.turmas.obter(id_turma)
+
+    def fechar_turma(self,id_turma,status):
+        status_permitido=["Aberta","Fechada"]
+        if not (status in status_permitido):
+            raise StuatusInvalidoError
+        self.turmas.fechar_turma(id_turma,status)
