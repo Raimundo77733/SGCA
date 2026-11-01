@@ -3,7 +3,9 @@ def criar_tabelas(banco):
         banco.executar("""
             CREATE TABLE IF NOT EXISTS Curso (
                 cod_curso TEXT PRIMARY KEY,
-                nome_curso TEXT NOT NULL
+                nome_curso TEXT NOT NULL,
+                carga_horaria INTEGER,
+                disciplinas TEXT NOT NULL
             )""")
         banco.executar("""
             CREATE TABLE IF NOT EXISTS Aluno (

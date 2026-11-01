@@ -1,5 +1,6 @@
 import argparse
 
+from sgca.errors.Validation import FormatoInvalido
 from src.sgca.domain.Aluno import Aluno
 from src.sgca.domain.Curso import Curso
 from src.sgca.domain.Turma import Turma
@@ -11,13 +12,53 @@ from src.sgca.facade.bootstrap import criar_sgca
 
 # ============================================================================
 # AÇÕES: cada função faz uma coisa e recebe o sistema e os argumentos da CLI
+# os argumentos são mostrados após usar o comando requerido na documentação
+# 'acad -h'
 # ============================================================================
 
-# --- cursos -----------------------------------------------------------------
+#listas
+def listar_cursos(sistema, args):
+    cursos = sistema.cadastro.listar_cursos()
+    for curso in cursos:
+        print(f"{curso.cod_curso} - {curso.nome_curso}")
+
+def listar_alunos_curso(sistema, args):
+    lista=sistema.relatorio.alunos_do_curso(args.cod_curso)
+    for aluno in lista:
+        print(f"Nome:{aluno.nome} - NºMatrícula:{aluno.matricula}")
+
+def listar_alunos_turma(sistema,args):
+    dicionario_turmas=sistema.relatorio.alunos_da_turma(args.id_turma)
+    print(f"ID:{dicionario_turmas["turma"].id_turma} Nome da Disciplina:{dicionario_turmas["turma"].nome_disciplina} "
+          f"Vagas:{dicionario_turmas["ocupadas"]}/{dicionario_turmas["vagas"]}")
+    for aluno in dicionario_turmas["alunos"]:
+        print(aluno)
+
+def listar_disciplinas_curso(sistema,args):
+    lista=sistema.relatorio.disciplinas_do_curso(args.cod_curso)
+    for disciplina in lista:
+        print(f"ID:{disciplina.id} - Nome:{disciplina.nome} - Créditos:{disciplina.creditos} - Carga Horária:{disciplina.carga_horaria} - Pré-Requisitos: {disciplina.prerequisitos}")
+
+#curso
 def adicionar_curso(sistema, args):
-    curso = Curso(args.nome_curso, args.cod_curso)
+    curso = Curso(args.nome_curso, args.cod_curso,args.carga_horaria)
     sistema.cadastro.inserir_curso(curso)
     print(f"Curso {curso.nome_curso} ({curso.cod_curso}) criado")
+
+def editar_curso(sistema,args):
+    curso = sistema.cadastro.buscar_curso(args.id_curso)
+    if args.nome_curso:
+        curso.nome_curso = args.nome_curso
+    if args.carga_horaria:
+        curso.carga_horaria=args.carga_horaria
+    if (args.nome_curso and args.carga_horaria)is None:
+        raise FormatoInvalido
+
+    curso.disciplinas = sistema.relatorio.disciplinas_do_curso(args.id_curso)
+    sistema.cadastro.editar_curso(curso)
+
+    print(f"Curso {curso.nome_curso} ({curso.cod_curso}) editado")
+
 
 
 def remover_curso(sistema, args):
@@ -25,13 +66,7 @@ def remover_curso(sistema, args):
     print(f"Curso {args.cod_curso} removido")
 
 
-def listar_cursos(sistema, args):
-    cursos = sistema.cadastro.listar_cursos()
-    for curso in cursos:
-        print(f"{curso.cod_curso} - {curso.nome_curso}")
-
-
-# --- alunos -----------------------------------------------------------------
+#aluno
 def cadastrar_aluno(sistema, args):
     curso = sistema.cadastro.buscar_curso(args.cod_curso)
     aluno = Aluno(args.nome, args.email, curso.cod_curso, curso.nome_curso)
@@ -45,6 +80,9 @@ def editar_aluno(sistema, args):
         aluno.nome = args.nome
     if args.email:
         aluno.email = args.email
+    if (args.nome and args.email)is None:
+        raise FormatoInvalido
+
     sistema.cadastro.editar_aluno(aluno)
     print(f"Aluno {args.matricula} atualizado")
 
@@ -57,7 +95,6 @@ def remover_aluno(sistema, args):
 def buscar_aluno(sistema, args):
     aluno = sistema.cadastro.buscar_aluno(args.matricula)
     print(aluno)
-
 
 # --- turmas -----------------------------------------------------------------
 def cadastrar_turma(sistema, args):
@@ -80,6 +117,10 @@ def cadastrar_turma(sistema, args):
 def adicionar_disciplina(sistema, args):
     sistema.cadastro.cadastrar_disciplina(args.nome, args.cod_curso, args.creditos,
                                           args.carga_horaria, args.prereq or [], args.semestre)
+    curso = sistema.cadastro.buscar_curso(args.cod_curso)
+    curso.disciplinas.update(args.nome)
+    sistema.cadastro.editar_curso(curso)
+
     print(f"Disciplina {args.nome} cadastrada no curso {args.cod_curso}")
 
 
@@ -87,6 +128,11 @@ def remover_turma(sistema, args):
     sistema.cadastro.remover_turma(args.id_turma)
     print(f"Turma {args.id_turma} removida")
 
+def editar_turma(sistema,args):
+    turma = sistema.cadastro.buscar_turma(args.id_turma)
+
+    sistema.cadastro.editar_turma(turma)
+    print(f"Turma {args.id_turma} editada")
 
 def buscar_turma(sistema, args):
     turma = sistema.cadastro.buscar_turma(args.id_turma)
@@ -95,6 +141,7 @@ def buscar_turma(sistema, args):
 def fechar_turma(sistema,args):
     sistema.cadastro.fechar_turma(args.id_turma, args.status)
     print(f"Status da turma: {args.id_turma} alterado para {args.status}")
+
 # --- matrículas -------------------------------------------------------------
 def matricular_aluno(sistema, args):
     sistema.matricula.matricular(args.matricula, args.id_turma)
@@ -128,6 +175,17 @@ def concluir_disciplina(sistema, args):
     for n_matricula, situacao in resultados:
         print(f"{n_matricula}: {situacao}")
 
+#relatórios
+def top_alunos(sistema,args):
+    lista=sistema.relatorio.top_n(args.id_turma)
+    for aluno in lista:
+        print(aluno)
+
+def listar_historico(sistema,args):
+    lista_disciplinas=sistema.relatorio.historico_do_aluno(args.matricula)
+    for disciplina in lista_disciplinas:
+        print(f"Nome da Disciplina:{disciplina.nome_disciplina} - Semestre:{disciplina.semestre} - Créditos:{disciplina.creditos} - "
+              f"Nota:{disciplina.nota_final} - Status: {disciplina.status} - Data de Conclusão: {disciplina.data_conclusao}")
 
 #Cria todos os parsers, e retorna o principal(parser)
 #requer o argumento comando para ser executado então sem comandos gera um erro
@@ -140,15 +198,31 @@ def criar_parser():
     acad_parser = comando.add_parser("acad", help="Ações acadêmicas")
     acad_comandos = acad_parser.add_subparsers(dest="acad", required=True)
 
+    #listar
+    acad_comandos.add_parser("list_cursos", help="Lista os cursos")
+
+    list_alunos_curso=acad_comandos.add_parser("list_alunos_curso",help="Lista todos os alunos de um curso")
+    list_alunos_curso.add_argument("cod_curso",help="Código do curso")
+
+    list_disciplinas_curso=acad_comandos.add_parser("list_disciplinas_curso",help="Lista todas as disciplinas de um curso")
+    list_disciplinas_curso.add_argument("cod_cursotop_alunos",help="Código do curso")
+
+    list_alunos_turma=acad_comandos.add_parser("list_alunos_turma",help="Lista todos os alunos de uma turma")
+    list_alunos_turma.add_argument("id_turma", type=int, help="ID da turma")
+
     # --- cursos ---
     add_curso = acad_comandos.add_parser("add_curso", help="Cria um novo curso")
     add_curso.add_argument("cod_curso", help="Código do curso (1000-9999)")
     add_curso.add_argument("nome_curso", help="Nome do curso")
+    add_curso.add_argument("carga_horaria", help="Carga horária do Curso")
+
+    edit_curso = acad_comandos.add_parser("edit_curso", help="Edita os dados de um curso")
+    edit_curso.add_argument("cod_curso", type=int, help="Código do curso (1000-9999)")
+    edit_curso.add_argument("--nome", help="Novo nome",required=False)
+    edit_curso.add_argument("--email", help="Novo e-mail",required=False)
 
     del_curso = acad_comandos.add_parser("del_curso", help="Remove um curso")
     del_curso.add_argument("cod_curso", help="Código do curso")
-
-    acad_comandos.add_parser("list_cursos", help="Lista os cursos")
 
     # --- alunos ---
     add_aluno = acad_comandos.add_parser("add_aluno", help="Cria um novo aluno")
@@ -221,41 +295,32 @@ def criar_parser():
     concluir = acad_comandos.add_parser("concluir_disciplina", help="Encerra a turma e grava o histórico dos alunos")
     concluir.add_argument("id_turma", type=int, help="ID da turma")
 
+
+    top_n=acad_comandos.add_parser("top_n",help="Lista de alunos organizado pela métrica CR")
+    top_n.add_argument("id_turma", type=int, help="ID da turma")
+
+    hist_aluno=acad_comandos.add_parser("hist_aluno",help="Lista de alunos organizado pela métrica CR")
+    hist_aluno.add_argument("matricula", type=int, help="Número de matrícula")
+
+
     return parser
 
 
 
 def executar(sistema, args):
-    #Filtra os comandos primeiro com o acad e depois o tipo e chama a função
+    #Filtra os comandos primeiro com o acad(Padrão da documentação) e depois o tipo e chama a função
     if args.comando == "acad":
-
-        if args.acad == "add_curso":
-            adicionar_curso(sistema, args)
-        elif args.acad == "del_curso":
-            remover_curso(sistema, args)
-        elif args.acad == "list_cursos":
+        #listagem
+        if args.acad == "list_cursos":
             listar_cursos(sistema, args)
+        elif args.acad=="list_disciplinas_curso":
+            listar_disciplinas_curso(sistema, args)
+        elif args.acad == "list_alunos_curso":
+            listar_alunos_curso(sistema, args)
+        elif args.acad == "list_alunos_turma":
+            listar_alunos_turma(sistema, args)
 
-        elif args.acad == "add_aluno":
-            cadastrar_aluno(sistema, args)
-        elif args.acad == "edit_aluno":
-            editar_aluno(sistema, args)
-        elif args.acad == "del_aluno":
-            remover_aluno(sistema, args)
-        elif args.acad == "busc_aluno":
-            buscar_aluno(sistema, args)
-
-        elif args.acad == "add_turma":
-            cadastrar_turma(sistema, args)
-        elif args.acad == "add_disciplina":
-            adicionar_disciplina(sistema, args)
-        elif args.acad == "del_turma":
-            remover_turma(sistema, args)
-        elif args.acad == "busc_turma":
-            buscar_turma(sistema, args)
-        elif args.acad=="fechar_turma":
-            fechar_turma(sistema,args)
-
+        #Controle
         elif args.acad == "matricular":
             matricular_aluno(sistema, args)
         elif args.acad == "trancar_disciplina":
@@ -268,6 +333,42 @@ def executar(sistema, args):
             lancar_frequencia(sistema, args)
         elif args.acad == "concluir_disciplina":
             concluir_disciplina(sistema, args)
+
+        #Curso
+        elif args.acad == "add_curso":
+            adicionar_curso(sistema, args)
+        elif args.acad == "del_curso":
+            remover_curso(sistema, args)
+
+        #Aluno
+        elif args.acad == "add_aluno":
+            cadastrar_aluno(sistema, args)
+        elif args.acad == "edit_aluno":
+            editar_aluno(sistema, args)
+        elif args.acad == "del_aluno":
+            remover_aluno(sistema, args)
+        elif args.acad == "busc_aluno":
+            buscar_aluno(sistema, args)
+
+        #turma
+        elif args.acad == "add_turma":
+            cadastrar_turma(sistema, args)
+        elif args.acad == "add_disciplina":
+            adicionar_disciplina(sistema, args)
+        elif args.acad == "del_turma":
+            remover_turma(sistema, args)
+        elif args.acad == "busc_turma":
+            buscar_turma(sistema, args)
+        elif args.acad=="fechar_turma":
+            fechar_turma(sistema,args)
+
+        #relatorios
+        elif args.acad == "top_n":
+            top_alunos(sistema,args)
+        elif args.acad == "hist_aluno":
+            listar_historico(sistema,args)
+
+
 
 
 def main():

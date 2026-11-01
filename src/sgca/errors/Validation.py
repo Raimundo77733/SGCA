@@ -30,5 +30,9 @@ class NotaInvalidaError(ValidationError):
 
 class FrequenciaInvalidaError(ValidationError):
     """O registro de frequência é inválido."""
+
 class StuatusInvalidoError(ValidationError):
     """O status atribuido a turma é inválido"""
+
+class FormatoInvalido(ValidationError):
+    '''Nenhum dado foi alterado devido à entrada de um formato de dados desconhecido'''
