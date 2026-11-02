@@ -1,9 +1,9 @@
-python cli.py acad add_curso 1001 "Ciência da Computação"  
-python cli.py acad add_curso 1002 "Matemática"  
-python cli.py acad add_curso 1003 "Engenharia Civil"  
-python cli.py acad add_curso 1004 "Biologia"  
-python cli.py acad add_curso 1005 "História"  
-python cli.py acad add_curso 1006 "Física"
+python cli.py acad add_curso 1001 "Ciência da Computação" 3600
+python cli.py acad add_curso 1002 "Matemática"  3400
+python cli.py acad add_curso 1003 "Engenharia Civil" 4200
+python cli.py acad add_curso 1004 "Biologia" 3600
+python cli.py acad add_curso 1005 "História" 3600
+python cli.py acad add_curso 1006 "Física" 3600
 python cli.py acad add_disciplina 1006 "Física" 3 50
 python cli.py acad add_disciplina 1002 "Matemática" 3 50  
 python cli.py acad add_disciplina 1001 "Fundamentos de Programação" 4 60 --prereq "Matemática"  
@@ -24,12 +24,7 @@ python cli.py acad add_aluno "Carla Souza" "carla@example.com" 1003
 python cli.py acad add_aluno "Diego Fernandes" "diego@example.com" 1004  
 python cli.py acad add_aluno "Eduarda Costa" "eduarda@example.com" 1005  
 python cli.py acad add_aluno "Felipe Lima" "felipe@example.com" 1006  
-python cli.py acad matricular 1 "1"  # Matricula Alice na turma "Fundamentos de Programação" (ID 1)  
-python cli.py acad matricular 2 "1"  # Matricula Bruno na turma "Fundamentos de Programação"  
-python cli.py acad matricular 3 "3"  # Matricula Carla na turma "Mecânica dos Fluidos" (ID 3)  
-python cli.py acad matricular 4 "4"  # Matricula Diego na turma "Genética" (ID 4)  
-python cli.py acad matricular 5 "5"  # Matricula Eduarda na turma "História do Brasil" (ID 5)  
-python cli.py acad matricular 6 "6"  # Matricula Felipe na turma "Mecânica Clássica" (ID 6)
+
 
 
 # Editar e-mail de um aluno  

@@ -1,6 +1,6 @@
 
-from src.sgca.domain.Aluno import Aluno
-from src.sgca.repositories.base import Repositorio
+from models import Repositorio
+from domain import Aluno
 
 
 class AlunoRepo(Repositorio):

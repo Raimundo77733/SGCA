@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from src.sgca.errors.UnauthorizedError import EstadoMatriculaError
-from src.sgca.errors.Validation import (EstadoInvalidoError, FrequenciaInvalidaError,
-                                        NotaInvalidaError)
+from errors.UnauthorizedError import EstadoMatriculaError
+from errors.Validation import (EstadoInvalidoError, FrequenciaInvalidaError,
+                               NotaInvalidaError)
 
 
 class Matricula:

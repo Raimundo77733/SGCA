@@ -1,5 +1,5 @@
 
-from  src.sgca.errors.DatabaseErrors import NaoEncontradoError
+from errors.DatabaseErrors import NaoEncontradoError
 
 class Repositorio:
     """Classe genérica CRUD"""

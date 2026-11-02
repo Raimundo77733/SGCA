@@ -1,5 +1,5 @@
-from src.sgca.domain.Pessoa import Pessoa
-from src.sgca.errors.UnauthorizedError import CourseStatusError
+from errors import CourseStatusError
+from domain import Pessoa
 
 
 class Aluno(Pessoa):

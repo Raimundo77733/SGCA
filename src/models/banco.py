@@ -6,21 +6,8 @@ Ninguém fora deste arquivo importa `sqlite3`. A conexão é criada uma vez
 import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
-from src.sgca.errors.DatabaseErrors import IntegridadeError, JaExisteError, CommitError
 
-
-def _determinar_tipo_erro(erro):
-    texto = str(erro)
-    if "UNIQUE" in texto or "PRIMARY KEY" in texto:
-        #Caso haja tentativa de gravar dados sobre uma chave única
-        return JaExisteError("Já existe um registro com esses dados.")
-    if "FOREIGN KEY" in texto:
-        #Caso as chaves sejam inválidas ou haja problemas de alinhamento entre o banco e os objetos
-        return IntegridadeError(
-            "Operação inválida: o registro referencia algo inexistente "
-            "ou ainda é referenciado por outros registros.")
-    return IntegridadeError(f"Violação de integridade: {texto}")
-    #Caso genérico em que o tipo de erro viola a integridade, mas não tem relação com a chave única ou estrangeira
+from utils import determinar_tipo_erro
 
 
 class Banco:
@@ -43,7 +30,7 @@ class Banco:
         try:
             return self._database_link.execute(sql, params)
         except sqlite3.IntegrityError as erro:
-            raise _determinar_tipo_erro(erro) from erro
+            raise determinar_tipo_erro(erro) from erro
 
     def fetch_one_line(self, sql, params=()):
         #quando for necessário retornar uma linha
@@ -77,7 +64,7 @@ class Banco:
             raise
             #Redireciona o erro do except para o executar que determina os tipos listados
             #Caminho da falha Try->yield-> with->executar->transacao->except->raise->
-            #                   _determinar_tipo_erro(erro)-> determinado tipo já existe| tipo integridade erro
+            #                   determinar_tipo_erro(erro)-> determinado tipo já existe| tipo integridade erro
             #                   |tipo integridade indeterminada
         else:
             self._nivel -= 1

@@ -1,0 +1,3 @@
+from.cadastro_service import CadastroService
+from .matricula_service import MatriculaService
+from .relatorio_service import RelatorioService

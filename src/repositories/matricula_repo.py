@@ -1,8 +1,8 @@
 import json
 from types import SimpleNamespace
 
-from src.sgca.domain.Matricula import Matricula
-from src.sgca.repositories.base import Repositorio
+from models import Repositorio
+from domain import Matricula
 
 
 class MatriculaRepo(Repositorio):

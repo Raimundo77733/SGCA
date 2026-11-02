@@ -1,9 +1,8 @@
 from datetime import date, datetime
 
-from src.sgca.domain.Matricula import Matricula
-from src.sgca.errors.Validation import ChoqueHorarioError, EstadoInvalidoError,PreRequisitoError, TurmaCheiaError,TurmaFechadaError
-from src.sgca.errors.DatabaseErrors import JaExisteError
-from src.sgca.errors.UnauthorizedError import PrazoTrancamentoError
+from errors import ChoqueHorarioError, EstadoInvalidoError, PreRequisitoError, TurmaCheiaError, TurmaFechadaError, \
+    JaExisteError, PrazoTrancamentoError
+from domain import Matricula
 
 
 class MatriculaService:

@@ -1,23 +1,8 @@
 import json
-from datetime import datetime
 
-from src.sgca.domain.Turma import Turma
-from src.sgca.repositories.base import Repositorio
-
-
-def _data_para_texto(data):
-    """Devolve 'AAAA-MM-DD' (formato ISO) para datetime, texto ISO ou texto 'dd/mm/aaaa'."""
-    if hasattr(data, "strftime"):
-        texto = data.strftime("%Y-%m-%d")
-    elif "/" in data:
-        texto = datetime.strptime(data, "%d/%m/%Y").strftime("%Y-%m-%d")
-    else:
-        texto = data
-    return texto
-
-
-def _texto_para_data(texto):
-    return datetime.strptime(texto, "%Y-%m-%d").strftime("%d/%m/%Y")
+from models import Repositorio
+from domain import Turma
+from utils import data_para_texto, inversor_texto_data
 
 
 class TurmaRepo(Repositorio):
@@ -42,7 +27,7 @@ class TurmaRepo(Repositorio):
             "semestre": obj.semestre,
             "vagas_max": obj.vagas_max,
             "status": obj.status,
-            "data_limite": _data_para_texto(obj.data_limite),
+            "data_limite": data_para_texto(obj.data_limite),
             "horarios": json.dumps(obj.horarios, ensure_ascii=False),
             "local": obj.local,
             "inscritos": obj.inscritos,
@@ -54,7 +39,7 @@ class TurmaRepo(Repositorio):
             vagas_max=linha["vagas_max"],
             id_disciplina=linha["id_disciplina"],
             semestre=linha["semestre"],
-            data_limite=_texto_para_data(linha["data_limite"]),
+            data_limite=inversor_texto_data(linha["data_limite"]),
         )
 
         turma.id_turma = linha["id_turma"]

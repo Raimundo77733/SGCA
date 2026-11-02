@@ -1,4 +1,4 @@
-from src.sgca.errors.DatabaseErrors import NaoEncontradoError
+from errors import NaoEncontradoError
 
 
 class DisciplinaRepo:

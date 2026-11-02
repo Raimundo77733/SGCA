@@ -1,4 +1,4 @@
-from src.sgca.errors.Validation import CodigoCursoInvalidoErro
+from errors.Validation import CodigoCursoInvalidoErro
 
 
 class Curso:
@@ -8,7 +8,7 @@ class Curso:
         self.nome_curso = nome_curso
         self.cod_curso = cod_curso
         self.carga_horaria=carga_horaria
-        self.disciplinas={}
+        self.disciplinas=""
 
 
     @property

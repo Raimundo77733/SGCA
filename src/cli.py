@@ -1,13 +1,8 @@
 import argparse
 
-from sgca.errors.Validation import FormatoInvalido
-from src.sgca.domain.Aluno import Aluno
-from src.sgca.domain.Curso import Curso
-from src.sgca.domain.Turma import Turma
-from src.sgca.errors.DatabaseErrors import DatabaseErrors
-from src.sgca.errors.UnauthorizedError import UnauthorizedError
-from src.sgca.errors.Validation import ValidationError
-from src.sgca.facade.bootstrap import criar_sgca
+from errors  import FormatoInvalido,ValidationError,UnauthorizedError,DatabaseErrors
+from domain import Aluno,Curso,Turma
+from facades import criar_sgca
 
 
 # ============================================================================
@@ -36,14 +31,17 @@ def listar_alunos_turma(sistema,args):
 
 def listar_disciplinas_curso(sistema,args):
     lista=sistema.relatorio.disciplinas_do_curso(args.cod_curso)
+
     for disciplina in lista:
-        print(f"ID:{disciplina.id} - Nome:{disciplina.nome} - Créditos:{disciplina.creditos} - Carga Horária:{disciplina.carga_horaria} - Pré-Requisitos: {disciplina.prerequisitos}")
+        print(f"ID:{disciplina["id"]} - Nome:{disciplina['nome']} - Créditos:{disciplina['creditos']} - Carga Horária:{disciplina['carga_horaria']}",end='')
+        if disciplina['prerequisitos']=="":print("- Pré-Requisitos: Nenhum")
+        else:print(f"- Pré-Requisitos:{disciplina['prerequisitos']}")
 
 #curso
 def adicionar_curso(sistema, args):
     curso = Curso(args.nome_curso, args.cod_curso,args.carga_horaria)
     sistema.cadastro.inserir_curso(curso)
-    print(f"Curso {curso.nome_curso} ({curso.cod_curso}) criado")
+    print(f"Código:{curso.cod_curso}  Nome do curso:{curso.nome_curso}  Carga Horária:{curso.carga_horaria}\nCriado com sucesso")
 
 def editar_curso(sistema,args):
     curso = sistema.cadastro.buscar_curso(args.id_curso)
@@ -118,7 +116,8 @@ def adicionar_disciplina(sistema, args):
     sistema.cadastro.cadastrar_disciplina(args.nome, args.cod_curso, args.creditos,
                                           args.carga_horaria, args.prereq or [], args.semestre)
     curso = sistema.cadastro.buscar_curso(args.cod_curso)
-    curso.disciplinas.update(args.nome)
+    nome_disciplina= [args.nome]
+    curso.disciplinas=", ".join(nome_disciplina)
     sistema.cadastro.editar_curso(curso)
 
     print(f"Disciplina {args.nome} cadastrada no curso {args.cod_curso}")
@@ -205,7 +204,7 @@ def criar_parser():
     list_alunos_curso.add_argument("cod_curso",help="Código do curso")
 
     list_disciplinas_curso=acad_comandos.add_parser("list_disciplinas_curso",help="Lista todas as disciplinas de um curso")
-    list_disciplinas_curso.add_argument("cod_cursotop_alunos",help="Código do curso")
+    list_disciplinas_curso.add_argument("cod_curso",type=int,help="Código do curso")
 
     list_alunos_turma=acad_comandos.add_parser("list_alunos_turma",help="Lista todos os alunos de uma turma")
     list_alunos_turma.add_argument("id_turma", type=int, help="ID da turma")
@@ -214,7 +213,7 @@ def criar_parser():
     add_curso = acad_comandos.add_parser("add_curso", help="Cria um novo curso")
     add_curso.add_argument("cod_curso", help="Código do curso (1000-9999)")
     add_curso.add_argument("nome_curso", help="Nome do curso")
-    add_curso.add_argument("carga_horaria", help="Carga horária do Curso")
+    add_curso.add_argument("carga_horaria",type=int, help="Carga horária do Curso")
 
     edit_curso = acad_comandos.add_parser("edit_curso", help="Edita os dados de um curso")
     edit_curso.add_argument("cod_curso", type=int, help="Código do curso (1000-9999)")
