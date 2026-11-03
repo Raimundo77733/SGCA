@@ -172,7 +172,7 @@ def lancar_frequencia(sistema, args):
     presente=None
     if args.presenca=="presente" or args.presenca=="falta":
         if args.presenca=="presente":presente=True
-        if args.presente=="falta":presente=False
+        if args.presenca=="falta":presente=False
     else:
         raise FormatoInvalido
     frequencia = sistema.matricula.lancar_frequencia(args.matricula, args.id_turma, args.data, presente)

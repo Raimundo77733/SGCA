@@ -19,7 +19,7 @@ python -m venv --upgrade-deps venv #Cria um ambiente virtual chamado venv, pode 
 source venv/bin/activate #O arquivo para mudança de ambiente muda dependendo do shell e do sistema operacional
 ```
 ```bash
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 O projeto já está funcional, navegue até a pasta src(source) dentro do projeto
 
