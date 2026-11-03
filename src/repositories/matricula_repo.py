@@ -13,6 +13,7 @@ class MatriculaRepo(Repositorio):
             "a.n_matricula"
             " FROM Matricula m"
             " JOIN Aluno a ON a.n_matricula=m.n_matricula")
+    CHAVE_SELECT = ("m.n_matricula","m.id_turma",)
     def _para_linha(self, obj):
         return {
             "n_matricula": obj.n_matricula,
@@ -37,7 +38,7 @@ class MatriculaRepo(Repositorio):
         return matricula
 
     def listar_por_aluno(self, n_matricula):
-        return self._consultar("WHERE m.n_matricula = ?", (n_matricula,))
+        return self._consultar("WHERE n_matricula = ?", (n_matricula,))
 
     def listar_por_turma(self, id_turma):
         return self._consultar("WHERE id_turma = ?", (id_turma,))

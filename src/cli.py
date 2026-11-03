@@ -3,6 +3,7 @@ import argparse
 from errors  import FormatoInvalido,ValidationError,UnauthorizedError,DatabaseErrors
 from domain import Aluno,Curso,Turma
 from facades import criar_sgca
+from utils import carregar_settings
 
 
 # ============================================================================
@@ -389,7 +390,8 @@ def executar(sistema, args):
 def main():
     parser = criar_parser()
     args = parser.parse_args()
-    sistema = criar_sgca(args.db)
+    settings= carregar_settings()
+    sistema = criar_sgca(args.db,settings)
     #Liga o bootstrap com a classe SGCA Manager
     try:
         executar(sistema, args)

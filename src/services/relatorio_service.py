@@ -1,5 +1,5 @@
 class RelatorioService:
-    def __init__(self, alunos, turmas,matriculas, historico, disciplinas, top_n_padrao=10):
+    def __init__(self, alunos, turmas,matriculas, historico, disciplinas, top_n_padrao):
         self.alunos = alunos
         self.turmas = turmas
         self.matriculas=matriculas

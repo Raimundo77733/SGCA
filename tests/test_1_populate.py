@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-CLI = str(Path(__file__).parent.parent.parent / "cli.py")
+CLI = str(Path(__file__).parent.parent/ "src/cli.py")
 
 
 def run_cli(*args):
@@ -41,12 +41,12 @@ def extrair_matricula(stdout: str) -> str:
 # ---------------------------------------------------------------------------
 
 CURSOS = [
-    (1001, "Ciência da Computação"),
-    (1002, "Matemática"),
-    (1003, "Engenharia Civil"),
-    (1004, "Biologia"),
-    (1005, "História"),
-    (1006, "Física"),
+    (1001, "Ciência da Computação",3600),
+    (1002, "Matemática",3600),
+    (1003, "Engenharia Civil",3600),
+    (1004, "Biologia",3600),
+    (1005, "História",3600),
+    (1006, "Física",3600),
 ]
 
 DISCIPLINAS = [
@@ -103,9 +103,9 @@ def matriculas_alunos():
 
 class TestPopularDatabase:
 
-    @pytest.mark.parametrize("curso_id, nome", CURSOS)
-    def test_add_curso(self, curso_id, nome):
-        assert_ok(run_cli("acad", "add_curso", curso_id, nome))
+    @pytest.mark.parametrize("curso_id, nome, carga_horaria", CURSOS)
+    def test_add_curso(self, curso_id, nome,carga_horaria):
+        assert_ok(run_cli("acad", "add_curso", curso_id, nome, carga_horaria))
 
     @pytest.mark.parametrize("curso_id, nome, creditos, carga, extras", DISCIPLINAS)
     def test_add_disciplina(self, curso_id, nome, creditos, carga, extras):

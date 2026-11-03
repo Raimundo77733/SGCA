@@ -5,8 +5,7 @@ from services import CadastroService, MatriculaService, RelatorioService
 from utils import carregar_settings, texto_para_data_load_settings
 
 
-def criar_sgca(caminho_db, caminho_settings=None):
-    settings = carregar_settings(caminho_settings)
+def criar_sgca(caminho_db, settings):
     nota_minima = settings["nota_minima_aprovacao"]
     frequencia_minima = settings["frequencia_minima"]
     top_n = settings["top_n_alunos"]
