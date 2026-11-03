@@ -19,6 +19,9 @@ class Aluno(Pessoa):
     def __len__(self):
         return 1
 
+    def __lt__(self,aluno):
+        return self._cr<aluno.cr
+
     @property
     def status_curso(self):
         return self._status_curso

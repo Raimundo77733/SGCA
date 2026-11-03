@@ -20,6 +20,16 @@ class MatriculaService:
         self.data_limite_trancamento_turma = data_limite_trancamento_turma
         self.data_limite_trancamento_curso = data_limite_trancamento_curso
 
+    def _turmas_em_andamento(self, aluno):
+        """Turmas em que o aluno está cursando no semestre informado."""
+        turmas = []
+        for matricula in self.matriculas.listar_por_aluno(aluno.matricula):
+            if matricula.status != "Cursando":
+                continue
+            turma = self.turmas.obter(matricula.id_turma)
+            turmas.append(turma)
+        return turmas
+
     def matricular(self, n_matricula, id_turma):
         with self.banco.transacao():
             aluno = self.alunos.obter(n_matricula)
@@ -34,7 +44,7 @@ class MatriculaService:
             self._verificar_requisitos(aluno, turma)
 
             matricula = Matricula(turma, aluno)
-            outras_turmas = self._turmas_em_andamento(aluno, turma.semestre)
+            outras_turmas = self._turmas_em_andamento(aluno)
             if not matricula.verificar_choque_horario(turma, outras_turmas):
                 raise ChoqueHorarioError("A turma tem horário em conflito com outra turma do aluno neste semestre.")
             if not matricula.verificar_vagas(turma) or not self.turmas.reservar_vaga(id_turma):
@@ -42,7 +52,11 @@ class MatriculaService:
             self.matriculas.inserir(matricula)
         return matricula
 
+    def remove_matricula(self,n_matricula,id_turma):
+        self.matriculas.repo_remove_matricula(n_matricula,id_turma)
+
     def trancar_disciplina(self, n_matricula, id_turma, hoje=None):
+        turma = self.turmas.obter(id_turma)
         if hoje is None:
             hoje = date.today()
         if hoje > self.data_limite_trancamento_turma:
@@ -55,16 +69,36 @@ class MatriculaService:
             matricula.status = "Trancada"
             self.matriculas.atualizar(matricula)
             self.turmas.liberar_vaga(id_turma)
+            self.historico.registrar(matricula.n_matricula, turma.nome_disciplina,
+                                     matricula.media, "Trancada", turma.creditos,
+                                     turma.semestre, hoje)
+            self.matriculas.repo_remove_matricula(n_matricula, id_turma)
 
     def trancar_curso(self, n_matricula, hoje=None):
+        aluno = self.alunos.obter(n_matricula)
+        lista_turmas=self._turmas_em_andamento(aluno)
+
         if hoje is None:
             hoje = date.today()
         if hoje > self.data_limite_trancamento_curso:
             limite = self.data_limite_trancamento_curso.strftime("%d/%m/%Y")
             raise PrazoTrancamentoError(f"O prazo para trancar o curso terminou em {limite}.")
-        aluno = self.alunos.obter(n_matricula)
+
+        for id_turma in lista_turmas:
+
+            matricula = self.matriculas.obter(n_matricula, id_turma)
+            turma = self.turmas.obter(id_turma)
+            self.historico.registrar(matricula.n_matricula, turma.nome_disciplina,
+                                     matricula.media, "Trancada", turma.creditos,
+                                     turma.semestre, hoje)
+            self.turmas.liberar_vaga(id_turma)
+            self.matriculas.repo_remove_matricula(n_matricula, id_turma)
+
+
         aluno.status_curso = "Trancado"
         self.alunos.atualizar(aluno)
+
+
 
     def lancar_nota(self, n_matricula, id_turma, avaliacao, nota):
         with self.banco.transacao():
@@ -112,16 +146,7 @@ class MatriculaService:
             self.turmas.atualizar(turma)
         return resultados
 
-    def _turmas_em_andamento(self, aluno, semestre):
-        """Turmas em que o aluno está cursando no semestre informado."""
-        turmas = []
-        for matricula in self.matriculas.listar_por_aluno(aluno.matricula):
-            if matricula.status != "Cursando":
-                continue
-            turma = self.turmas.obter(matricula.id_turma)
-            if turma.semestre == semestre:
-                turmas.append(turma)
-        return turmas
+
 
     def _verificar_requisitos(self, aluno, turma):
         exigidos = self.disciplinas.requisitos(turma.nome_disciplina)
@@ -139,5 +164,3 @@ class MatriculaService:
         else:turma.status="Aberta"
         self.turmas.mudar_status_turma(id_turma,turma.status)
 
-    def remove_matricula(self,n_matricula,id_turma):
-        self.matriculas.repo_remove_matricula(n_matricula,id_turma)

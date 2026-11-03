@@ -14,19 +14,21 @@ class DisciplinaRepo:
                 "prerequisitos) VALUES (?, ?, ?, ?, ?, ?)",
                 (nome, semestre, cod_curso, creditos, carga_horaria, ",".join(prerequisitos)))
 
-    def obter(self, nome):
-        """Devolve a disciplina (dict) ou levanta NaoEncontradoError."""
-        disciplina = self.buscar(nome)
-        if disciplina is None:
-            raise NaoEncontradoError(f"Disciplina {nome} não encontrada.")
-        return disciplina
-
-    def buscar(self, nome):
+    def _buscar(self, nome):
         linha = self.banco.fetch_one_line("SELECT * FROM Disciplinas WHERE nome = ?", (nome,))
         if linha is None:
             return None
         disciplina = dict(linha)
         return disciplina
+
+    def obter(self, nome):
+        """Devolve a disciplina (dict) ou levanta NaoEncontradoError."""
+        disciplina = self._buscar(nome)
+        if disciplina is None:
+            raise NaoEncontradoError(f"Disciplina {nome} não encontrada.")
+        return disciplina
+
+
 
     def listar_por_curso(self, cod_curso):
         linhas = self.banco.fetch_all_lines(
