@@ -47,3 +47,6 @@ class MatriculaRepo(Repositorio):
     def repo_topnt(self, id_turma, n):
         return self._consultar(
             "WHERE m.id_turma = ? ORDER BY m.media DESC, a.nome LIMIT ?", (id_turma, n))
+    def repo_remove_matricula(self,n_matricula,id_turma):
+        self.remover(n_matricula,id_turma)
+

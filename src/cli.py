@@ -132,10 +132,19 @@ def remover_turma(sistema, args):
 def buscar_turma(sistema, args):
     turma = sistema.cadastro.buscar_turma(args.id_turma)
     print(turma)
+def _remover_matricula(sistema,n_matricula,id_turma):
+    sistema.matricula.remove_matricula(n_matricula,id_turma)
 
-def fechar_turma(sistema,args):
-    sistema.cadastro.fechar_turma(args.id_turma, args.status)
-    print(f"Status da turma: {args.id_turma} alterado para {args.status}")
+def mudar_status_turma(sistema,args):
+    sistema.matricula.mudar_status_turma(args.id_turma)
+    dicionario_turmas=sistema.relatorio.alunos_da_turma(args.id_turma)
+    alunos_removidos=0
+    for aluno in dicionario_turmas["alunos"]:
+        _remover_matricula(sistema,aluno.matricula,args.id_turma)
+        alunos_removidos+=1
+    turma=sistema.cadastro.buscar_turma(args.id_turma)
+
+    print(f"Status da turma: {turma.id_turma} alterado para {turma.status} e {alunos_removidos} alunos foram removidos")
 
 # --- matrículas -------------------------------------------------------------
 def matricular_aluno(sistema, args):
@@ -275,9 +284,8 @@ def criar_parser():
     busc_turma = acad_comandos.add_parser("busc_turma", help="Busca uma turma pelo ID")
     busc_turma.add_argument("id_turma", type=int, help="ID da turma")
 
-    fechar_turm=acad_comandos.add_parser("fechar_turma", help="Altera o status da turma pelo ID")
+    fechar_turm=acad_comandos.add_parser("mudar_status_turma", help="Altera o status da turma pelo ID")
     fechar_turm.add_argument("id_turma", type=int, help="ID da turma")
-    fechar_turm.add_argument("status", help="ID da turma")
 
     # --- matrículas ---
     matricular = acad_comandos.add_parser("matricular", help="Matricula um aluno em uma turma")
@@ -373,8 +381,8 @@ def executar(sistema, args):
             remover_turma(sistema, args)
         elif args.acad == "busc_turma":
             buscar_turma(sistema, args)
-        elif args.acad=="fechar_turma":
-            fechar_turma(sistema,args)
+        elif args.acad=="mudar_status_turma":
+            mudar_status_turma(sistema,args)
 
         #relatorios
         elif args.acad == "top_nt":

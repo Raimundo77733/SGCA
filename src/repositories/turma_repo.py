@@ -79,9 +79,10 @@ class TurmaRepo(Repositorio):
                 "UPDATE Turma SET inscritos = inscritos - 1 "
                 "WHERE id_turma = ? AND inscritos > 0", (id_turma,))
 
-    def fechar_turma(self,id_turma,status):
+    def mudar_status_turma(self,id_turma,status):
         with self.banco.transacao():
             self.banco.executar(
-                "UPDATE Turma SET status = ? "
-                "WHERE id_turma = ? ", (status,id_turma,))
+                "UPDATE Turma SET status = ?, "
+                "inscritos = ? "
+                "WHERE id_turma = ? ", (status,0,id_turma,))
 

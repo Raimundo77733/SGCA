@@ -2,7 +2,7 @@ from facades.SGCAManager import SGCAManager
 from models import Banco, criar_tabelas
 from repositories import AlunoRepo, CursoRepo, DisciplinaRepo, HistoricoRepo, MatriculaRepo, TurmaRepo
 from services import CadastroService, MatriculaService, RelatorioService
-from utils import carregar_settings, texto_para_data_load_settings
+from utils import texto_para_data_load_settings
 
 
 def criar_sgca(caminho_db, settings):

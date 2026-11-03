@@ -131,3 +131,12 @@ class MatriculaService:
                 faltando.append(disciplina)
         if faltando:
             raise PreRequisitoError("Pré-requisitos pendentes: " + ", ".join(faltando))
+
+    def mudar_status_turma(self,id_turma):
+        turma=self.turmas.obter(id_turma)
+        if turma.status=="Aberta":turma.status="Fechada"
+        else:turma.status="Aberta"
+        self.turmas.mudar_status_turma(id_turma,turma.status)
+
+    def remove_matricula(self,n_matricula,id_turma):
+        self.matriculas.repo_remove_matricula(n_matricula,id_turma)
