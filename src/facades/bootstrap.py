@@ -29,5 +29,5 @@ def criar_sgca(caminho_db, caminho_settings=None):
         matricula=MatriculaService(alunos, turmas, matriculas, historico, disciplinas,
                            banco, nota_minima, frequencia_minima,
                            data_limite_trancamento_turma, data_limite_trancamento_curso),
-        relatorio=RelatorioService(alunos, turmas, historico, disciplinas, top_n),
+        relatorio=RelatorioService(alunos, turmas,matriculas, historico, disciplinas, top_n),
     )

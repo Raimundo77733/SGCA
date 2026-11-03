@@ -34,7 +34,7 @@ class AlunoRepo(Repositorio):
     def listar_por_curso(self, cod_curso):
         return self._consultar("WHERE a.cod_curso = ? ORDER BY a.nome", (cod_curso,))
 
-    def top_n(self, cod_curso, n):
+    def repo_topnc(self, cod_curso, n):
         return self._consultar(
             "WHERE a.cod_curso = ? ORDER BY a.cr DESC, a.nome LIMIT ?", (cod_curso, n))
 

@@ -84,3 +84,4 @@ class TurmaRepo(Repositorio):
             self.banco.executar(
                 "UPDATE Turma SET status = ? "
                 "WHERE id_turma = ? ", (status,id_turma,))
+

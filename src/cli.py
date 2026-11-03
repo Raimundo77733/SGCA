@@ -12,10 +12,10 @@ from facades import criar_sgca
 # ============================================================================
 
 #listas
-def listar_cursos(sistema, args):
+def list_cursos(sistema):
     cursos = sistema.cadastro.listar_cursos()
     for curso in cursos:
-        print(f"{curso.cod_curso} - {curso.nome_curso}")
+        print(f"Código:{curso.cod_curso}  Nome:{curso.nome_curso} Carga Horária:{curso.carga_horaria}")
 
 def listar_alunos_curso(sistema, args):
     lista=sistema.relatorio.alunos_do_curso(args.cod_curso)
@@ -24,10 +24,11 @@ def listar_alunos_curso(sistema, args):
 
 def listar_alunos_turma(sistema,args):
     dicionario_turmas=sistema.relatorio.alunos_da_turma(args.id_turma)
-    print(f"ID:{dicionario_turmas["turma"].id_turma} Nome da Disciplina:{dicionario_turmas["turma"].nome_disciplina} "
-          f"Vagas:{dicionario_turmas["ocupadas"]}/{dicionario_turmas["vagas"]}")
+    print(f"ID:{dicionario_turmas["turma"].id_turma}\nNome da Disciplina:{dicionario_turmas["turma"].nome_disciplina} "
+          f"\nVagas:{dicionario_turmas["ocupadas"]}/{dicionario_turmas["vagas"]}\nStatus:{dicionario_turmas["status"]}\n")
     for aluno in dicionario_turmas["alunos"]:
         print(aluno)
+        print("\n")
 
 def listar_disciplinas_curso(sistema,args):
     lista=sistema.relatorio.disciplinas_do_curso(args.cod_curso)
@@ -127,12 +128,6 @@ def remover_turma(sistema, args):
     sistema.cadastro.remover_turma(args.id_turma)
     print(f"Turma {args.id_turma} removida")
 
-def editar_turma(sistema,args):
-    turma = sistema.cadastro.buscar_turma(args.id_turma)
-
-    sistema.cadastro.editar_turma(turma)
-    print(f"Turma {args.id_turma} editada")
-
 def buscar_turma(sistema, args):
     turma = sistema.cadastro.buscar_turma(args.id_turma)
     print(turma)
@@ -175,10 +170,26 @@ def concluir_disciplina(sistema, args):
         print(f"{n_matricula}: {situacao}")
 
 #relatórios
-def top_alunos(sistema,args):
-    lista=sistema.relatorio.top_n(args.id_turma)
+def top_alunos_t(sistema,args):
+    obj=sistema.relatorio.top_n_t(args.id_turma)
+    media=""
+    lugar=1
+
+    for item in obj:
+        aluno = sistema.cadastro.buscar_aluno(item.n_matricula)
+        if item.status == "Cursando": media = "Média temporária:"
+        if item.status == "Concluida": media = "Média:"
+        print(f"TOP:{lugar}º\nNª:{aluno.matricula}\nAluno:{aluno.nome}\n{media}:{item.media}\n")
+        lugar+=1
+
+def top_alunos_c(sistema,args):
+    lista=sistema.relatorio.top_n_c(args.cod_curso)
+    lugar=1
     for aluno in lista:
+        print(f"TOP:{lugar}º")
         print(aluno)
+        print("\n")
+        lugar+=1
 
 def listar_historico(sistema,args):
     lista_disciplinas=sistema.relatorio.historico_do_aluno(args.matricula)
@@ -295,8 +306,11 @@ def criar_parser():
     concluir.add_argument("id_turma", type=int, help="ID da turma")
 
 
-    top_n=acad_comandos.add_parser("top_n",help="Lista de alunos organizado pela métrica CR")
-    top_n.add_argument("id_turma", type=int, help="ID da turma")
+    top_n_t=acad_comandos.add_parser("top_nt",help="Lista de alunos organizado pela métrica CR em uma turma")
+    top_n_t.add_argument("id_turma", type=int, help="ID da turma")
+
+    top_n_c = acad_comandos.add_parser("top_nc", help="Lista de alunos organizado pela métrica CR em um curso")
+    top_n_c.add_argument("cod_curso", type=int, help="ID do curso")
 
     hist_aluno=acad_comandos.add_parser("hist_aluno",help="Lista de alunos organizado pela métrica CR")
     hist_aluno.add_argument("matricula", type=int, help="Número de matrícula")
@@ -311,7 +325,7 @@ def executar(sistema, args):
     if args.comando == "acad":
         #listagem
         if args.acad == "list_cursos":
-            listar_cursos(sistema, args)
+            list_cursos(sistema)
         elif args.acad=="list_disciplinas_curso":
             listar_disciplinas_curso(sistema, args)
         elif args.acad == "list_alunos_curso":
@@ -362,8 +376,10 @@ def executar(sistema, args):
             fechar_turma(sistema,args)
 
         #relatorios
-        elif args.acad == "top_n":
-            top_alunos(sistema,args)
+        elif args.acad == "top_nt":
+            top_alunos_t(sistema,args)
+        elif args.acad == "top_nc":
+            top_alunos_c(sistema,args)
         elif args.acad == "hist_aluno":
             listar_historico(sistema,args)
 

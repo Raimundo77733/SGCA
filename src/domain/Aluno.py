@@ -14,7 +14,7 @@ class Aluno(Pessoa):
         self._cr=0.0
 
     def __str__(self) :
-        return f"Aluno:{self.nome}\nE-mail:{self.email}\nCódigo do Curso:{self.cod_curso}\nCurso:{self.nome_curso}\nCR:{self.cr}\nStatus do curso:{self.status_curso}"
+        return f"Nº:{self._n_matricula}\nAluno:{self.nome}\nE-mail:{self.email}\nCódigo do Curso:{self.cod_curso}\nCurso:{self.nome_curso}\nCR:{self.cr}\nStatus do curso:{self.status_curso}"
 
     def __len__(self):
         return 1
