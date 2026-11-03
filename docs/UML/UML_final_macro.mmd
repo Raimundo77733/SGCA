@@ -1,0 +1,20 @@
+sequenceDiagram
+    participant User as 👤 Usuário
+    participant CLI as 🖥️ CLI
+    participant Manager as 🏗️ SGCAManager
+    participant Service as ⚙️ Service
+    participant Repo as 💾 Repositórios
+    participant DB as 🗄️ Banco de Dados
+
+    User->>CLI: Executa comando
+    CLI->>CLI: Filtra entradas
+    CLI->>Manager: Solicita ação
+    Manager->>Service: Delega ao serviço
+    Service->>Service: Valida dados
+    Service->>Repo: Busca/Salva dados
+    Repo->>DB: Query SQL
+    DB-->>Repo: Retorna resultado
+    Repo-->>Service: Retorna entidade/informação
+    Service-->>Manager: Resultado processado
+    Manager-->>CLI: Retorna resposta
+    CLI-->>User: Exibe resultado

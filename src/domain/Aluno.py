@@ -16,11 +16,15 @@ class Aluno(Pessoa):
     def __str__(self) :
         return f"Nº:{self._n_matricula}\nAluno:{self.nome}\nE-mail:{self.email}\nCódigo do Curso:{self.cod_curso}\nCurso:{self.nome_curso}\nCR:{self.cr}\nStatus do curso:{self.status_curso}"
 
-    def __len__(self):
-        return 1
+    def __bool__(self):
+        if self._status_curso=="Cursando":return True
+        return False
 
     def __lt__(self,aluno):
         return self._cr<aluno.cr
+
+    def __gt__(self,aluno):
+        return self._cr>aluno.cr
 
     @property
     def status_curso(self):

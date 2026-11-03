@@ -36,7 +36,7 @@ class MatriculaService:
             turma = self.turmas.obter(id_turma)
 
             if aluno.status_curso == "Trancado":
-                raise EstadoInvalidoError("O curso do aluno está trancado; não é possível matricular.")
+                raise EstadoInvalidoError("O curso do aluno está trancado não é possível matricular.")
             if turma.status != "Aberta":
                 raise TurmaFechadaError("A turma não está aberta para matrículas.")
             if self.matriculas.existe(n_matricula, id_turma):
@@ -84,15 +84,15 @@ class MatriculaService:
             limite = self.data_limite_trancamento_curso.strftime("%d/%m/%Y")
             raise PrazoTrancamentoError(f"O prazo para trancar o curso terminou em {limite}.")
 
-        for id_turma in lista_turmas:
-
-            matricula = self.matriculas.obter(n_matricula, id_turma)
-            turma = self.turmas.obter(id_turma)
+        for turma in lista_turmas:
+            print(turma.id_turma)
+            matricula = self.matriculas.obter(n_matricula, turma.id_turma)
+            turma = self.turmas.obter(turma.id_turma)
             self.historico.registrar(matricula.n_matricula, turma.nome_disciplina,
                                      matricula.media, "Trancada", turma.creditos,
                                      turma.semestre, hoje)
-            self.turmas.liberar_vaga(id_turma)
-            self.matriculas.repo_remove_matricula(n_matricula, id_turma)
+            self.turmas.liberar_vaga(turma.id_turma)
+            self.matriculas.repo_remove_matricula(n_matricula, turma.id_turma)
 
 
         aluno.status_curso = "Trancado"

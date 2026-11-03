@@ -10,7 +10,6 @@ class Curso:
         self.carga_horaria=carga_horaria
         self.disciplinas=""
 
-
     @property
     def cod_curso(self):
         return self._cod_curso

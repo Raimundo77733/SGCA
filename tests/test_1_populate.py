@@ -1,39 +1,7 @@
 # test_popular_database.py
-import re
-import subprocess
-import sys
-from pathlib import Path
-
 import pytest
 
-CLI = str(Path(__file__).parent.parent/ "src/cli.py")
-
-
-def run_cli(*args):
-    return subprocess.run(
-        [sys.executable, CLI, *map(str, args)],
-        capture_output=True,
-        text=True,
-    )
-
-
-def assert_ok(result):
-    assert result.returncode == 0, (
-        f"Falhou com código {result.returncode}\n"
-        f"STDOUT: {result.stdout}\n"
-        f"STDERR: {result.stderr}"
-    )
-
-
-def extrair_matricula(stdout: str) -> str:
-    # Ex.: "Aluno adicionado com matrícula 454334"
-    match = re.search(r"(809259)\D*(\d+)", stdout, re.IGNORECASE)
-    if not match:
-        # Fallback: pega o último número de 5+ dígitos da saída
-        numeros = re.findall(r"\d{5,}", stdout)
-        assert numeros, f"Matrícula não encontrada no stdout:\n{stdout}"
-        return numeros[-1]
-    return match.group(1)
+from helpers import assert_ok, extrair_matricula, run_cli
 
 
 # ---------------------------------------------------------------------------
@@ -134,4 +102,3 @@ class TestPopularDatabase:
         )
         codigo = matriculas_alunos[nome]
         assert_ok(run_cli("acad", "matricular", codigo, turma_id))
-

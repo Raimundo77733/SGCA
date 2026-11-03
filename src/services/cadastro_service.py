@@ -1,7 +1,7 @@
 import random
 
 
-from errors.Validation import MatriculaInvalidaError, ValidationError, StuatusInvalidoError
+from errors.Validation import MatriculaInvalidaError, ValidationError
 
 MATRICULA_MIN = 100000
 MATRICULA_MAX = 999999

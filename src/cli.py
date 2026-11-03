@@ -111,7 +111,7 @@ def cadastrar_turma(sistema, args):
     turma = Turma(horarios, args.vagas_max, disciplina["id"], args.semestre, args.data_limite)
     turma.local = args.local
     id_turma = sistema.cadastro.cadastrar_turma(turma)
-    print(f"Turma {id_turma} criada")
+    print(f"{turma}\nCriação completa")
 
 
 def adicionar_disciplina(sistema, args):
@@ -169,7 +169,12 @@ def lancar_nota(sistema, args):
 
 
 def lancar_frequencia(sistema, args):
-    presente = args.presenca == "presente"
+    presente=None
+    if args.presenca=="presente" or args.presenca=="falta":
+        if args.presenca=="presente":presente=True
+        if args.presente=="falta":presente=False
+    else:
+        raise FormatoInvalido
     frequencia = sistema.matricula.lancar_frequencia(args.matricula, args.id_turma, args.data, presente)
     print(f"Frequência lançada. Frequência atual: {frequencia:.1f}%")
 
@@ -211,8 +216,8 @@ def top_alunos_c(sistema,args):
 def listar_historico(sistema,args):
     lista_disciplinas=sistema.relatorio.historico_do_aluno(args.matricula)
     for disciplina in lista_disciplinas:
-        print(f"Nome da Disciplina:{disciplina.nome_disciplina} - Semestre:{disciplina.semestre} - Créditos:{disciplina.creditos} - "
-              f"Nota:{disciplina.nota_final} - Status: {disciplina.status} - Data de Conclusão: {disciplina.data_conclusao}")
+        print(f"Nome da Disciplina:{disciplina['nome_disciplina']} - Semestre:{disciplina['semestre']} - Créditos:{disciplina['creditos']} - "
+              f"Nota:{disciplina['nota_final']} - Status: {disciplina['status']} - Data de Conclusão: {disciplina['data_conclusao']}")
 
 #Cria todos os parsers, e retorna o principal(parser)
 #requer o argumento comando para ser executado então sem comandos gera um erro
@@ -246,7 +251,7 @@ def criar_parser():
     edit_curso = acad_comandos.add_parser("edit_curso", help="Edita os dados de um curso")
     edit_curso.add_argument("cod_curso", type=int, help="Código do curso (1000-9999)")
     edit_curso.add_argument("--nome", help="Novo nome",required=False)
-    edit_curso.add_argument("--email", help="Novo e-mail",required=False)
+    edit_curso.add_argument("--carga_horaria", help="Nova carga horária", required=False)
 
     del_curso = acad_comandos.add_parser("del_curso", help="Remove um curso")
     del_curso.add_argument("cod_curso", help="Código do curso")
@@ -371,6 +376,8 @@ def executar(sistema, args):
             adicionar_curso(sistema, args)
         elif args.acad == "del_curso":
             remover_curso(sistema, args)
+        elif args.acad=="edit_curso":
+            editar_curso(sistema,args)
 
         #Aluno
         elif args.acad == "add_aluno":
