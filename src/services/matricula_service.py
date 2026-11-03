@@ -80,10 +80,11 @@ class MatriculaService:
             self.matriculas.atualizar(matricula)
         return matricula.frequencia_media
 
-    def concluir_disciplina(self, id_turma):
+    def concluir_disciplina(self, id_turma,nota_minima,frequencia_minima):
         """Encerra a turma, grava o histórico de cada aluno e atualiza o CR.
         Devolve uma lista de (n_matricula, situação).
         """
+
         resultados = []
         with self.banco.transacao():
             turma = self.turmas.obter(id_turma)
@@ -94,7 +95,7 @@ class MatriculaService:
             for matricula in self.matriculas.listar_por_turma(id_turma):
                 if matricula.status != "Cursando":
                     continue
-                situacao = matricula.calcular_situacao(self.nota_minima, self.frequencia_minima)
+                situacao = matricula.calcular_situacao(nota_minima, frequencia_minima)
                 matricula.status = "Concluida"
                 self.matriculas.atualizar(matricula)
                 creditos = turma.creditos

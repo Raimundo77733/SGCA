@@ -143,8 +143,9 @@ def mudar_status_turma(sistema,args):
         _remover_matricula(sistema,aluno.matricula,args.id_turma)
         alunos_removidos+=1
     turma=sistema.cadastro.buscar_turma(args.id_turma)
+    if turma.status=="Fechada":print(f"Status da turma {turma.id_turma} alterado para {turma.status} e {alunos_removidos} alunos foram removidos")
+    if turma.status=="Aberta":print(f"Status da turma {turma.id_turma} alterado para {turma.status}")
 
-    print(f"Status da turma: {turma.id_turma} alterado para {turma.status} e {alunos_removidos} alunos foram removidos")
 
 # --- matrículas -------------------------------------------------------------
 def matricular_aluno(sistema, args):
@@ -174,7 +175,13 @@ def lancar_frequencia(sistema, args):
 
 
 def concluir_disciplina(sistema, args):
-    resultados = sistema.matricula.concluir_disciplina(args.id_turma)
+    nota_minima=args.nota_minima
+    frequencia_minima=args.frequencia_minima
+
+    if nota_minima is None:nota_minima = sistema.matricula.nota_minima
+    if frequencia_minima is None:frequencia_minima = sistema.matricula.frequencia_minima
+
+    resultados = sistema.matricula.concluir_disciplina(args.id_turma,nota_minima,frequencia_minima)
     print(f"Turma {args.id_turma} encerrada")
     for n_matricula, situacao in resultados:
         print(f"{n_matricula}: {situacao}")
@@ -313,6 +320,9 @@ def criar_parser():
 
     concluir = acad_comandos.add_parser("concluir_disciplina", help="Encerra a turma e grava o histórico dos alunos")
     concluir.add_argument("id_turma", type=int, help="ID da turma")
+    concluir.add_argument("--nota_minima", type=float, required=False,help="Nota Mínima necessária para aprovação no formato decimal")
+    concluir.add_argument("--frequencia_minima", type=int,required=False, help="Frequencia Mínima necessária para aprovação na turma")
+
 
 
     top_n_t=acad_comandos.add_parser("top_nt",help="Lista de alunos organizado pela métrica CR em uma turma")
